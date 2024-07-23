@@ -1,0 +1,15 @@
+Name: user
+Host: 0.0.0.0
+Port: 8888
+DB:
+  DNS: root:123456@tcp(127.0.0.1)/test?parseTime=true
+Cache:
+- Host: bjdxt.qcgameweb01.qiyi.redis:6522
+  Pass: LG12zOzf08xE
+  Type: node
+
+DevServer:
+  Enabled: true
+  Port: 6470
+  MetricsPath: /metrics
+  EnableMetrics: true

@@ -1,0 +1,17 @@
+syntax = "v1"
+
+type (
+	RequestUser {
+		Id uint64 `form:"id"`
+	}
+	ResponseUser {
+		Id       uint64
+		Nickname string
+	}
+)
+
+service user {
+	@handler One
+	get /user (RequestUser) returns (ResponseUser)
+}
+
