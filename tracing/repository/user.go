@@ -3,17 +3,16 @@ package repository
 import (
 	"context"
 	"time"
+	"tracing/repository/ent"
+	"tracing/repository/ent/user"
 )
 
 type User struct {
+	repo
 }
 
-func NewUser() *User {
-	repo := new(User)
-	return repo
-}
+func (repo *User) Fetch(ctx context.Context, id int) *ent.User {
+	time.Sleep(500 * time.Millisecond)
 
-func (repo *User) FetchName(ctx context.Context, id int) (string, error) {
-	time.Sleep(1 * time.Second)
-	return "admin", nil
+	return repo.db.User.Query().WithComments().WithPosts().Where(user.ID(id)).FirstX(ctx)
 }
