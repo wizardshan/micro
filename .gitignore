@@ -24,3 +24,7 @@ go.work.sum
 /.idea
 /.vscode
 .DS_Store
+
+.parcel-cache
+node_modules/
+dist

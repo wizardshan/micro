@@ -20,7 +20,7 @@ const exporter = new OTLPTraceExporter({
 
 const resource = Resource.default().merge(
     new Resource({
-        [SEMRESATTRS_SERVICE_NAME]: 'User',
+        [SEMRESATTRS_SERVICE_NAME]: 'UserWeb',
         [SEMRESATTRS_SERVICE_VERSION]: '1.0.0',
         [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]: 'prod'
     }),
@@ -42,7 +42,7 @@ provider.register({
     //propagator: new W3CTraceContextPropagator(),
 });
 
-const tracer = provider.getTracer('WebClient');
+const tracer = provider.getTracer('JSClient');
 
 const prepareClickEvent = () => {
     const id = 1
@@ -61,9 +61,9 @@ const prepareClickEvent = () => {
             span.setAttribute("user.id", id)
 
             span.addEvent("requestStart")
-            const method = 'Get'
+            const method = 'GET'
             fetchFn(url, method, traceparent).then((response) => {
-                span.updateName("Web" + method + ":" +response.Router)
+                span.updateName(method + " " +response.Router)
                 span.addEvent("responseEnd")
                 //trace.getSpan(context.active()).addEvent('fetching-single-span-completed');
                 // 错误异常 span.setStatus()

@@ -1,3 +1,3 @@
-npm init -y
-
 npm install
+
+npx parcel index.html
