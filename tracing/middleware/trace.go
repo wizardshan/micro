@@ -29,8 +29,12 @@ func Trace(tracer trace.Tracer) gin.HandlerFunc {
 		defer func() {
 			c.Request = c.Request.WithContext(savedCtx)
 		}()
+
+		header := c.Request.Header
+		header.Set("traceParent", c.DefaultQuery("traceParent", ""))
+
 		propagators := otel.GetTextMapPropagator()
-		ctx := propagators.Extract(savedCtx, propagation.HeaderCarrier(c.Request.Header))
+		ctx := propagators.Extract(savedCtx, propagation.HeaderCarrier(header))
 
 		opts := []trace.SpanStartOption{
 			trace.WithAttributes(attribute.String("http.client_ip", c.ClientIP())),

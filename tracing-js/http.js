@@ -59,10 +59,9 @@ const prepareClickEvent = () => {
             const { traceparent } = output; // version - traceid - parentid/spanid - traceflags
             console.log(traceparent)
             span.setAttribute("user.id", id)
-
             span.addEvent("requestStart")
             const method = 'GET'
-            fetchFn(url, method, traceparent).then((response) => {
+            fetchFn(url + '?traceParent=' + traceparent, method).then((response) => {
                 span.updateName(method + " " +response.Router)
                 span.addEvent("responseEnd")
                 //trace.getSpan(context.active()).addEvent('fetching-single-span-completed');
@@ -78,21 +77,19 @@ const prepareClickEvent = () => {
     element2.addEventListener('click', clickHandler(xhrData));
 }
 
-const fetchData = (url, method, traceparent) => fetch(url, {
+const fetchData = (url, method) => fetch(url, {
     method: method,
     headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'Traceparent': traceparent,
+        'Content-Type': 'application/x-www-form-urlencoded',
     },
 }).then(res=>res.json())
 
-const xhrData = (url, method, traceparent) => new Promise((resolve, reject) => {
+const xhrData = (url, method) => new Promise((resolve, reject) => {
     const req = new XMLHttpRequest();
     req.open(method, url, true);
-    req.setRequestHeader('Content-Type', 'application/json');
+    req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     req.setRequestHeader('Accept', 'application/json');
-    req.setRequestHeader('Traceparent', traceparent);
     req.onload = () => {
         resolve();
     };
