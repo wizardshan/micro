@@ -42,7 +42,7 @@ provider.register({
     //propagator: new W3CTraceContextPropagator(),
 });
 
-const tracer = provider.getTracer('JSClient');
+const tracer = provider.getTracer('JsClient');
 
 const prepareClickEvent = () => {
     const id = 1

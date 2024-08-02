@@ -9,6 +9,7 @@ import (
 	"tracing/controller"
 	"tracing/middleware"
 	"tracing/pkg/app"
+	"tracing/pkg/cache"
 	"tracing/repository"
 	"tracing/repository/ent"
 )
@@ -23,8 +24,8 @@ func main() {
 
 	components := &app.Components{
 		Tracer: &app.Tracer{
-			Router: tp.Tracer("router"),
-			DB:     tp.Tracer("db"),
+			Ctr: tp.Tracer("ctr"),
+			DB:  tp.Tracer("db"),
 		},
 	}
 
@@ -62,12 +63,13 @@ func main() {
 
 	engine := gin.New()
 	engine.Use(middleware.Cors())
-	engine.Use(middleware.Trace(components.Tracer.Router))
 
-	handler := new(controller.Handler)
+	cache := cache.New()
+	handler := controller.NewHandler(components.Tracer.Ctr, cache)
 
 	repoUser := repository.NewUser(db, components)
 	ctrUser := controller.NewUser(repoUser, components)
+
 	engine.GET("/user/:id", handler.Wrapper(ctrUser.One))
 
 	engine.Run()
