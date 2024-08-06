@@ -62,7 +62,8 @@ func main() {
 	//}))
 
 	components.DB = db
-	cache := store.New()
+	//cache := store.NewMemory()
+	cache := store.NewRedis()
 	components.Cache = cache
 
 	repoUser := repository.NewUser(db)

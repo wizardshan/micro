@@ -14,7 +14,7 @@ type Tracer struct {
 
 type Components struct {
 	DB     *ent.Client
-	Cache  *store.Cache
+	Cache  store.Cache
 	Tracer *Tracer
 
 	RepoUser repository.IUser

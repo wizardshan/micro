@@ -23,10 +23,10 @@ func (resp *Response) Marshal() []byte {
 }
 
 type ctr struct {
-	cache *store.Cache
+	cache store.Cache
 }
 
-func cache[T any](c *gin.Context, cache *store.Cache, key string, fetch func() (T, error)) (resp T, err error) {
+func cache[T any](c *gin.Context, cache store.Cache, key string, fetch func() (T, error)) (resp T, err error) {
 
 	if data, found := cache.Get(c.Request.Context(), key); found {
 		c.Header("Cache-Key", key)
