@@ -9,9 +9,11 @@ import (
 	"tracing/controller"
 	"tracing/middleware"
 	"tracing/pkg/app"
+	"tracing/pkg/http"
 	"tracing/pkg/store"
 	"tracing/repository"
 	"tracing/repository/ent"
+	usercenter "tracing/repository/user-center"
 )
 
 func main() {
@@ -66,7 +68,9 @@ func main() {
 	cache := store.NewRedis()
 	components.Cache = cache
 
-	repoUser := repository.NewUser(db)
+	request := http.New(nil)
+	centerUser := usercenter.New("http://passport.qiyi.domain", request)
+	repoUser := repository.NewUser(db, centerUser)
 	components.RepoUser = repoUser
 
 	ctrUser := controller.NewUser(components)

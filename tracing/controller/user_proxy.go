@@ -29,8 +29,8 @@ func (ctr *UserProxy) One(c *gin.Context) (any, error) {
 	idParam := c.Param("id")
 	id, _ := strconv.Atoi(idParam)
 
-	return cache(c, ctr.cache, request.CacheKey(id), func() (response.User, error) {
-		return *ctr.User.One(c, request, id), nil
+	return cache(c, ctr.cache, request.CacheKey(id), func() (*response.User, error) {
+		return ctr.User.One(c, request, id), nil
 	})
 }
 
