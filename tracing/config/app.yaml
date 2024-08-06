@@ -1,0 +1,5 @@
+Name: User
+
+Cache:
+  Router:
+    /users: ['ID','Mobile']

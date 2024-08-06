@@ -2,7 +2,8 @@ package repository
 
 import (
 	"context"
-	"time"
+	"tracing/controller/request"
+	"tracing/domain"
 	"tracing/repository/ent"
 	"tracing/repository/ent/user"
 )
@@ -11,8 +12,11 @@ type User struct {
 	repo
 }
 
-func (repo *User) Fetch(ctx context.Context, id int) *ent.User {
-	time.Sleep(500 * time.Millisecond)
+func (repo *User) Fetch(ctx context.Context, id int) *domain.User {
+	return repo.db.User.Query().WithComments().WithPosts().Where(user.ID(id)).FirstX(ctx).Mapper()
+}
 
-	return repo.db.User.Query().WithComments().WithPosts().Where(user.ID(id)).FirstX(ctx)
+func (repo *User) FetchMany(ctx context.Context, query *request.Users) domain.Users {
+	var entUser ent.Users = repo.db.User.Query().WithComments().WithPosts().Where(user.ID(query.ID)).AllX(ctx)
+	return entUser.Mapper()
 }

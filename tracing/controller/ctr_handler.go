@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel"
@@ -10,7 +9,6 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 	"net/http"
-	"tracing/pkg/cache"
 )
 
 type Filter func(*http.Request) bool
@@ -21,25 +19,24 @@ type HandlerFunc func(c *gin.Context) (any, error)
 
 type Handler struct {
 	tracer trace.Tracer
-	cache  *cache.Cache
 }
 
-func NewHandler(tracer trace.Tracer, cache *cache.Cache) *Handler {
+func NewHandler(tracer trace.Tracer) *Handler {
 	handler := new(Handler)
 	handler.tracer = tracer
-	handler.cache = cache
 	return handler
 }
 
 func (h *Handler) Wrapper(handlerFunc HandlerFunc) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		c.Set("cacheKey", []byte("ctr-"+c.FullPath()))
-
 		c.JSON(http.StatusOK, h.traceWrapper(c, handlerFunc))
 	}
 }
 
 func (h *Handler) handle(c *gin.Context, handlerFunc HandlerFunc) *Response {
+
+	// 在这里处理panic
+
 	data, err := handlerFunc(c)
 	router := c.FullPath()
 	if err == nil {
@@ -52,7 +49,7 @@ func (h *Handler) handle(c *gin.Context, handlerFunc HandlerFunc) *Response {
 func (h *Handler) traceWrapper(c *gin.Context, handlerFunc HandlerFunc) *Response {
 	for _, f := range filters {
 		if !f(c.Request) {
-			return h.cacheWrapper(c, handlerFunc)
+			return h.handle(c, handlerFunc)
 		}
 	}
 
@@ -78,36 +75,18 @@ func (h *Handler) traceWrapper(c *gin.Context, handlerFunc HandlerFunc) *Respons
 	defer span.End()
 
 	c.Request = c.Request.WithContext(ctx)
-	resp := h.cacheWrapper(c, handlerFunc)
+	resp := h.handle(c, handlerFunc)
 
 	span.SetStatus(codes.Ok, resp.Message)
+	cached := c.Writer.Header().Get("Cached")
+	span.SetAttributes(attribute.String("Cached", cached))
+	if c.Writer.Header().Get("Cached") == "true" {
+		span.SetAttributes(attribute.String("Cache-Key", c.Writer.Header().Get("Cache-Key")))
+	}
 	if resp.Code != 0 {
 		span.SetStatus(codes.Error, resp.Message)
-		span.SetAttributes(attribute.String("resp", string(resp.bytes())))
+		span.SetAttributes(attribute.String("resp", string(resp.Marshal())))
 	}
 
-	return resp
-}
-
-func (h *Handler) cacheWrapper(c *gin.Context, handlerFunc HandlerFunc) *Response {
-	cacheKey, exist := c.Get("cacheKey")
-	if !exist {
-		return h.handle(c, handlerFunc)
-	}
-
-	key, ok := cacheKey.([]byte)
-	if ok {
-		if data, found := h.cache.Get(c.Request.Context(), key); found {
-			var resp Response
-			if err := json.Unmarshal(data, &resp); err == nil {
-				resp.Cache = true
-				return &resp
-			}
-
-		}
-	}
-
-	resp := h.handle(c, handlerFunc)
-	h.cache.Set(c.Request.Context(), key, resp.bytes(), 10)
 	return resp
 }

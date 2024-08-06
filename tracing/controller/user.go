@@ -2,8 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"strconv"
-	"time"
+	"tracing/controller/request"
+	"tracing/controller/response"
 	"tracing/repository"
 )
 
@@ -11,10 +11,12 @@ type User struct {
 	repo repository.IUser
 }
 
-func (ctr *User) One(c *gin.Context) (any, error) {
-	idParam := c.Param("id")
-	id, _ := strconv.Atoi(idParam)
+func (ctr *User) One(c *gin.Context, query *request.User, id int) *response.User {
+	domainUser := ctr.repo.Fetch(c.Request.Context(), id)
+	return response.MapperUser(domainUser)
+}
 
-	time.Sleep(500 * time.Millisecond)
-	return ctr.repo.Fetch(c.Request.Context(), id), nil
+func (ctr *User) Many(c *gin.Context, query *request.Users) response.Users {
+	domainUsers := ctr.repo.FetchMany(c.Request.Context(), query)
+	return response.MapperUsers(domainUsers)
 }

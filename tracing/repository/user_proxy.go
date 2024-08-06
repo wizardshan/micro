@@ -2,15 +2,17 @@ package repository
 
 import (
 	"context"
-	"tracing/pkg/app"
+	"tracing/controller/request"
+	"tracing/domain"
 	"tracing/repository/ent"
 )
 
 type IUser interface {
-	Fetch(ctx context.Context, id int) *ent.User
+	Fetch(ctx context.Context, id int) *domain.User
+	FetchMany(ctx context.Context, query *request.Users) domain.Users
 }
 
-func NewUser(db *ent.Client, components *app.Components) IUser {
+func NewUser(db *ent.Client) IUser {
 	repo := new(UserProxy)
 	repo.db = db
 	return repo
