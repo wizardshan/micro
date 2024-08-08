@@ -12,11 +12,11 @@ type User struct {
 }
 
 func (ctr *User) One(c *gin.Context, query *request.User, id int) *response.User {
-	domainUser := ctr.repo.Fetch(c.Request.Context(), id)
-	return response.MapperUser(domainUser)
+	domUser := ctr.repo.Fetch(c.Request.Context(), id)
+	return response.MapperUser(domUser)
 }
 
 func (ctr *User) Many(c *gin.Context, query *request.Users) response.Users {
-	domainUsers := ctr.repo.FetchMany(c.Request.Context(), query)
-	return response.MapperUsers(domainUsers)
+	domUsers := ctr.repo.FetchMany(c.Request.Context(), query)
+	return response.MapperUsers(domUsers)
 }

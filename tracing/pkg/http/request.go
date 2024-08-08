@@ -4,8 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-resty/resty/v2"
-	"github.com/google/go-querystring/query"
 )
+
+type Query interface {
+	String() string
+}
 
 type Request struct {
 	client *resty.Client
@@ -17,15 +20,21 @@ func New(client *resty.Client) *Request {
 	return req
 }
 
-func (request *Request) Get(ctx context.Context, values any, url string) {
-	q, err := query.Values(values)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(q.Encode())
+func (request *Request) Get(ctx context.Context, query string, result any, url string) {
 
+	type Response struct {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	var resultErr error
 	resp, err := request.client.R().
-		SetQueryString(q.Encode()).
+		SetQueryString(query).
+		SetResult(result).
+		SetError(&resultErr).
 		Get(url)
-	fmt.Println(resp, err)
+	fmt.Println(resp)
+	fmt.Println(err)
+	fmt.Println(resultErr)
+
 }

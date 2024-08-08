@@ -1,7 +1,6 @@
-package usercenter
+package user
 
 import (
-	"fmt"
 	"testing"
 	"tracing/pkg/query"
 )
@@ -12,6 +11,6 @@ func TestQueryUserEncode(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(query.Encode(q, '|', []string{"sign"}, fieldNames))
-	fmt.Println(query.Encode(q, '&', []string{}, fieldNames))
+	//fmt.Println(query.Encode(q, '|', []string{"sign"}, fieldNames))
+	//fmt.Println(query.Encode(q, '&', []string{}, fieldNames))
 }

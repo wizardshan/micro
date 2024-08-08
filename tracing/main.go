@@ -13,11 +13,10 @@ import (
 	"tracing/pkg/store"
 	"tracing/repository"
 	"tracing/repository/ent"
-	usercenter "tracing/repository/user-center"
+	"tracing/repository/service/bi"
 )
 
 func main() {
-
 	ctx := context.Background()
 	tp, err := initTracer(ctx)
 	if err != nil {
@@ -28,6 +27,13 @@ func main() {
 		Tracer: &app.Tracer{
 			Ctr: tp.Tracer("ctr"),
 			DB:  tp.Tracer("db"),
+		},
+		Servers: &app.Servers{
+			BI: &app.ServerInfo{
+				Host:    "http://apisgame.qiyi.domain/bi/",
+				Source:  43,
+				SignKey: "1234567890",
+			},
 		},
 	}
 
@@ -69,11 +75,10 @@ func main() {
 	components.Cache = cache
 
 	request := http.New(nil)
-	centerUser := usercenter.New("http://passport.qiyi.domain", request)
-	repoUser := repository.NewUser(db, centerUser)
-	components.RepoUser = repoUser
+	servBI := bi.New(request, components)
+	repoUser := repository.NewUser(db, servBI)
 
-	ctrUser := controller.NewUser(components)
+	ctrUser := controller.NewUser(repoUser, components)
 
 	handler := controller.NewHandler(components.Tracer.Ctr)
 

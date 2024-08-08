@@ -5,7 +5,7 @@ import (
 	"tracing/controller/request"
 	"tracing/domain"
 	"tracing/repository/ent"
-	usercenter "tracing/repository/user-center"
+	"tracing/repository/service/bi"
 )
 
 type IUser interface {
@@ -13,10 +13,10 @@ type IUser interface {
 	FetchMany(ctx context.Context, query *request.Users) domain.Users
 }
 
-func NewUser(db *ent.Client, center *usercenter.Client) IUser {
+func NewUser(db *ent.Client, servBI *bi.Client) IUser {
 	repo := new(UserProxy)
 	repo.db = db
-	repo.center = center
+	repo.servBI = servBI
 	return repo
 }
 

@@ -190,7 +190,7 @@ func reflectValue(values url.Values, val reflect.Value, scope string, fieldNames
 		}
 
 		if sv.Type().Implements(encoderType) {
-			// if sv is a nil pointer and the custom encoder is defined on a non-pointer
+			// if sv is a nil pointer and the custom Encoder is defined on a non-pointer
 			// method receiver, set sv to the zero value of the underlying type
 			if !reflect.Indirect(sv).IsValid() && sv.Type().Elem().Implements(encoderType) {
 				sv = reflect.New(sv.Type().Elem())
@@ -214,7 +214,7 @@ func reflectValue(values url.Values, val reflect.Value, scope string, fieldNames
 		if sv.Kind() == reflect.Slice || sv.Kind() == reflect.Array {
 			if sv.Len() == 0 {
 				// skip if slice or array is empty
-				continue
+				//continue
 			}
 
 			var del string

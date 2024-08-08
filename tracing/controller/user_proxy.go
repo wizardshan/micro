@@ -6,6 +6,7 @@ import (
 	"tracing/controller/request"
 	"tracing/controller/response"
 	"tracing/pkg/app"
+	"tracing/repository"
 )
 
 type UserProxy struct {
@@ -13,9 +14,9 @@ type UserProxy struct {
 	User
 }
 
-func NewUser(components *app.Components) *UserProxy {
+func NewUser(user repository.IUser, components *app.Components) *UserProxy {
 	ctr := new(UserProxy)
-	ctr.repo = components.RepoUser
+	ctr.repo = user
 	ctr.cache = components.Cache
 	return ctr
 }

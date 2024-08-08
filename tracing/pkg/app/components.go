@@ -3,7 +3,6 @@ package app
 import (
 	"go.opentelemetry.io/otel/trace"
 	"tracing/pkg/store"
-	"tracing/repository"
 	"tracing/repository/ent"
 )
 
@@ -12,10 +11,20 @@ type Tracer struct {
 	DB  trace.Tracer
 }
 
+type ServerInfo struct {
+	Host    string
+	Source  int
+	SignKey string
+}
+
+type Servers struct {
+	BI *ServerInfo
+}
+
 type Components struct {
 	DB     *ent.Client
 	Cache  store.Cache
 	Tracer *Tracer
 
-	RepoUser repository.IUser
+	Servers *Servers
 }

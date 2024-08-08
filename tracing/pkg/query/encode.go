@@ -2,13 +2,12 @@ package query
 
 import (
 	"net/url"
-	"slices"
 	"sort"
 	"strconv"
 	"strings"
 )
 
-func Encode(v url.Values, sep byte, filters []string, fieldNames []string) string {
+func Encode(v url.Values, sep byte, fieldNames []string) string {
 	if len(v) == 0 {
 		return ""
 	}
@@ -21,9 +20,6 @@ func Encode(v url.Values, sep byte, filters []string, fieldNames []string) strin
 	for _, k := range keys {
 		vs := v[k]
 		keyEscaped := url.QueryEscape(k)
-		if slices.Contains(filters, keyEscaped) {
-			continue
-		}
 
 		for _, v := range vs {
 			if buf.Len() > 0 {
@@ -43,11 +39,6 @@ func Encode(v url.Values, sep byte, filters []string, fieldNames []string) strin
 	sort.Strings(fieldNames)
 	var bufValue strings.Builder
 	for _, k := range fieldNames {
-
-		if slices.Contains(filters, strings.ToLower(k)) {
-			continue
-		}
-
 		if bufValue.Len() > 0 {
 			bufValue.WriteByte(',')
 		}
