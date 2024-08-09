@@ -18,7 +18,8 @@ type ServerInfo struct {
 }
 
 type Servers struct {
-	BI *ServerInfo
+	BI      *ServerInfo
+	Payment *ServerInfo
 }
 
 type Components struct {

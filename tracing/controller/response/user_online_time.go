@@ -31,6 +31,10 @@ func MapperUserOnlineTime(domUserOnlineTime *domain.UserOnlineTime) *UserOnlineT
 	}
 	respUserOnlineTime := new(UserOnlineTime)
 	respUserOnlineTime.GameID = domUserOnlineTime.GameID
+	respUserOnlineTime.ServerID = domUserOnlineTime.ServerID
+	respUserOnlineTime.Date = domUserOnlineTime.Date
+	respUserOnlineTime.StartTime = domUserOnlineTime.StartTime
+	respUserOnlineTime.EndTime = domUserOnlineTime.EndTime
 	respUserOnlineTime.Duration = domUserOnlineTime.Duration
 	return respUserOnlineTime
 }

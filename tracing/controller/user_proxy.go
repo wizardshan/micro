@@ -14,7 +14,7 @@ type UserProxy struct {
 	User
 }
 
-func NewUser(user repository.IUser, components *app.Components) *UserProxy {
+func NewUser(user *repository.User, components *app.Components) *UserProxy {
 	ctr := new(UserProxy)
 	ctr.repo = user
 	ctr.cache = components.Cache

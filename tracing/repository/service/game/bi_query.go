@@ -1,4 +1,4 @@
-package bi
+package game
 
 import (
 	"fmt"

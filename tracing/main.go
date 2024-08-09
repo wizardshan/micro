@@ -13,15 +13,20 @@ import (
 	"tracing/pkg/store"
 	"tracing/repository"
 	"tracing/repository/ent"
-	"tracing/repository/service/bi"
+	"tracing/repository/service/game"
 )
 
 func main() {
+
 	ctx := context.Background()
 	tp, err := initTracer(ctx)
 	if err != nil {
 		panic(err)
 	}
+
+	source := 43
+	signKey := "1234567890"
+	host := "http://apisgame.qiyi.domain"
 
 	components := &app.Components{
 		Tracer: &app.Tracer{
@@ -30,23 +35,23 @@ func main() {
 		},
 		Servers: &app.Servers{
 			BI: &app.ServerInfo{
-				Host:    "http://apisgame.qiyi.domain/bi/",
-				Source:  43,
-				SignKey: "1234567890",
+				Host:    host + "/bi/",
+				Source:  source,
+				SignKey: signKey,
+			},
+			Payment: &app.ServerInfo{
+				Host:    host + "/pay",
+				Source:  source,
+				SignKey: signKey,
 			},
 		},
 	}
 
-	host := "127.0.0.1:3306"
-	name := "test"
-	username := "root"
-	password := "123456"
-
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true",
-		username,
-		password,
-		host,
-		name,
+		"root",
+		"123456",
+		"127.0.0.1:3306",
+		"test",
 	)
 
 	drv, err := sql.Open("mysql", dsn)
@@ -75,8 +80,9 @@ func main() {
 	components.Cache = cache
 
 	request := http.New(nil)
-	servBI := bi.New(request, components)
-	repoUser := repository.NewUser(db, servBI)
+	servBI := game.NewBI(request, components)
+	servPayment := game.NewPayment(request, components)
+	repoUser := repository.NewUser(db, servBI, servPayment)
 
 	ctrUser := controller.NewUser(repoUser, components)
 
