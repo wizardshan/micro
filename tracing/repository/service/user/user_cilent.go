@@ -3,22 +3,20 @@ package user
 import (
 	"context"
 	"fmt"
-	"github.com/elliotchance/pie/v2"
-	"tracing/pkg/encrypt"
-	"tracing/pkg/http"
+	"github.com/go-resty/resty/v2"
 )
 
 type Client struct {
-	host          string
-	salt          string
-	requestClient *http.Request
+	host   string
+	salt   string
+	client *resty.Client
 }
 
-func New(host string, requestClient *http.Request) *Client {
+func New(host string, client *resty.Client) *Client {
 	c := new(Client)
 	c.host = host
 	c.salt = "youxuIlop6JD8ftf7BdPLxi"
-	c.requestClient = requestClient
+	c.client = client
 
 	return c
 }
@@ -28,10 +26,10 @@ func New(host string, requestClient *http.Request) *Client {
 //}
 
 func (c *Client) FetchMany(ctx context.Context, IDs []int) Users {
-	query := &QueryUsers{
-		Query:   defaultQuery(),
-		UserIDs: pie.Join(IDs, ","),
-	}
+	//query := &QueryUsers{
+	//	Query:   defaultQuery(),
+	//	UserIDs: pie.Join(IDs, ","),
+	//}
 
 	type Resp struct {
 		Response
@@ -39,17 +37,17 @@ func (c *Client) FetchMany(ctx context.Context, IDs []int) Users {
 	}
 
 	resp := new(Resp)
-	c.request(ctx, query, resp, "/apis/inner/info/batch/byIds.action")
+	//c.request(ctx, query, resp, "/apis/inner/info/batch/byIds.action")
 	fmt.Println(resp)
 	return nil
 }
 
-func (c *Client) request(ctx context.Context, value any, resp any, path string) Users {
-	query := ""
-	if builder, ok := value.(http.Builder); ok {
-		query = builder.Build() + "&sign=" + encrypt.Sign(value, c.salt)
-	}
-
-	c.requestClient.Get(ctx, query, resp, c.host+path)
-	return nil
-}
+//func (c *Client) request(ctx context.Context, value any, resp any, path string) Users {
+//	query := ""
+//	if builder, ok := value.(http.Builder); ok {
+//		query = builder.Build() + "&sign=" + encrypt.Sign(value, c.salt)
+//	}
+//
+//	c.requestClient.Get(ctx, query, resp, c.host+path)
+//	return nil
+//}

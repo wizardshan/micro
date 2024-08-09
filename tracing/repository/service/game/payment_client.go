@@ -2,16 +2,16 @@ package game
 
 import (
 	"context"
+	"github.com/go-resty/resty/v2"
 	"tracing/domain/money"
 	"tracing/pkg/app"
-	"tracing/pkg/http"
 )
 
 type Payment struct {
 	serv
 }
 
-func NewPayment(client *http.Request, components *app.Components) *Payment {
+func NewPayment(client *resty.Client, components *app.Components) *Payment {
 	conf := components.Servers.Payment
 	return &Payment{
 		serv{client, conf.Host, conf.Source, conf.SignKey},

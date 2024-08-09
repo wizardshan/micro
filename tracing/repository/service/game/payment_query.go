@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 	"tracing/domain/money"
-	"tracing/pkg/encrypt"
 )
 
 const (
@@ -17,7 +16,7 @@ const (
 type OrderMoneyFen int
 
 type OrderQuery struct {
-	encrypt.SignField
+	SignField
 	UserID    int        `url:"user_id"`
 	MinMoney  money.Unit `url:"min_money"`
 	MoneyType int        `url:"money_type"`

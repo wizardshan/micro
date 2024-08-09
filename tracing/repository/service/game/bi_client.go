@@ -2,15 +2,15 @@ package game
 
 import (
 	"context"
+	"github.com/go-resty/resty/v2"
 	"tracing/pkg/app"
-	"tracing/pkg/http"
 )
 
 type BI struct {
 	serv
 }
 
-func NewBI(client *http.Request, components *app.Components) *BI {
+func NewBI(client *resty.Client, components *app.Components) *BI {
 	conf := components.Servers.BI
 	return &BI{
 		serv{client, conf.Host, conf.Source, conf.SignKey},

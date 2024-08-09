@@ -2,26 +2,33 @@ package game
 
 import (
 	"context"
+	"fmt"
+	"github.com/go-resty/resty/v2"
 	"tracing/pkg/encrypt"
-	"tracing/pkg/http"
 )
 
 type serv struct {
-	client  *http.Request
+	client  *resty.Client
 	host    string
 	source  int
 	signKey string
 }
 
-func (serv *serv) request(ctx context.Context, query http.Query, data any, path string) {
+func (serv *serv) request(ctx context.Context, query Encryptor, data any, path string) {
 
 	var resp Response
 	resp.Data = data
+	query.source(serv.source)
+	query.signKey(serv.signKey)
 
-	s, ok := query.(encrypt.Signer)
-	if !ok {
-		panic("value must be signer")
-	}
-	s.Build(serv.source, serv.signKey)
-	serv.client.Get(ctx, query.String()+"&sign="+encrypt.MD5(s.Encode()), &resp, serv.host+path)
+	var resultErr error
+	respRaw, err := serv.client.R().
+		SetQueryString(query.String() + "&sign=" + encrypt.MD5(query.Encode())).
+		SetResult(&resp).
+		SetError(&resultErr).
+		Get(serv.host + path)
+	fmt.Println(respRaw)
+	fmt.Println(err)
+	fmt.Println(resultErr)
+
 }

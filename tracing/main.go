@@ -9,7 +9,6 @@ import (
 	"tracing/controller"
 	"tracing/middleware"
 	"tracing/pkg/app"
-	"tracing/pkg/http"
 	"tracing/pkg/store"
 	"tracing/repository"
 	"tracing/repository/ent"
@@ -79,9 +78,9 @@ func main() {
 	cache := store.NewRedis()
 	components.Cache = cache
 
-	request := http.New(nil)
-	servBI := game.NewBI(request, components)
-	servPayment := game.NewPayment(request, components)
+	clientHttp := initClientHttp()
+	servBI := game.NewBI(clientHttp, components)
+	servPayment := game.NewPayment(clientHttp, components)
 	repoUser := repository.NewUser(db, servBI, servPayment)
 
 	ctrUser := controller.NewUser(repoUser, components)

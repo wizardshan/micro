@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"github.com/elliotchance/pie/v2"
 	"time"
-	"tracing/pkg/encrypt"
 )
 
 type OnlineTimeQuery struct {
-	encrypt.SignField
+	SignField
 	UserID    int       `url:"uid"`
 	Terminal  []int     `url:"terminal,comma"`
 	StartDate time.Time `url:"start_date"`
